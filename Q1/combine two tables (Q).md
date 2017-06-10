@@ -1,4 +1,4 @@
-#Combine Two Trees
+##Combine Two Tables
  Table: Person
 
 <pre><code>+-------------+---------+
