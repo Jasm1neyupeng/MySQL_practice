@@ -8,3 +8,11 @@ Person表是主表，Address表是从表，通过Left Outer Join左外连接即�
 <pre><code>SELECT p.FirstName, p.LastName, a.City, a.State
 FROM Person p LEFT OUTER JOIN Address a USING (PersonId);
 </code></pre>
+
+<pre><code>SELECT Person.FirstName, Person.LastName, Address.City, Address.State 
+FROM Person LEFT JOIN Address ON Person.PersonId=Address.PersonId
+</code></pre>
+
+<pre><code>SELECT Person.FirstName, Person.LastName, Address.City, Address.State 
+FROM Person NATURAL LEFT JOIN Address;
+</code></pre>
