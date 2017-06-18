@@ -1,0 +1,28 @@
+##Answer
+这道题给了我们一个Logs表，让我们找Num列中连续出现相同数字三次的数字，那么由于需要找三次相同数字，所以我们需要建立三个表的实例，我们可以用l1分别和l2, l3内交，l1和l2的Id下一个位置比，l1和l3的下两个位置比，然后将Num都相同的数字返回即可：
+
+解法一:
+<pre><code>SELECT DISTINCT l1.Num FROM Logs l1
+JOIN Logs l2 ON l1.Id = l2.Id - 1
+JOIN Logs l3 ON l1.Id = l3.Id - 2
+WHERE l1.Num = l2.Num AND l2.Num = l3.Num;
+</code></pre>
+
+下面这种方法没用用到Join，而是直接在三个表的实例中查找，然后把四个条件限定上，就可以返回正确结果了：
+
+解法二:
+
+<pre><code>SELECT DISTINCT l1.Num FROM Logs l1, Logs l2, Logs l3
+WHERE l1.Id = l2.Id - 1 AND l2.Id = l3.Id - 1
+AND l1.Num = l2.Num AND l2.Num = l3.Num;
+</code></pre>
+
+再来看一种画风截然不同的方法，用到了变量count和pre，分别初始化为0和-1，然后需要注意的是用到了IF语句，MySQL里的IF语句和我们所熟知的其他语言的if不太一样，相当于我们所熟悉的三元操作符a?b:c，若a真返回b，否则返回c，具体可看这个帖子。那么我们先来看对于Num列的第一个数字1，pre由于初始化是-1，和当前Num不同，所以此时count赋1，此时给pre赋为1，然后Num列的第二个1进来，此时的pre和Num相同了，count自增1，到Num列的第三个1进来，count增加到了3，此时满足了where条件，t.n >= 3，所以1就被select出来了，以此类推遍历完整个Num就可以得到最终结果：
+
+
+解法三：
+<pre><code>SELECT DISTINCT Num FROM (
+SELECT Num, @count := IF(@pre = Num, @count + 1, 1) AS n, @pre := Num
+FROM Logs, (SELECT @count := 0, @pre := -1) AS init
+) AS t WHERE t.n >= 3;
+</code></pre>
